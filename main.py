@@ -46,8 +46,13 @@ def tokenize_function(examples):
         truncation=True,
         max_length=64
     )
+    labels["input_ids"] = [
+        [(l if l != tokenizer.pad_token_id else -100) for l in label]
+        for label in labels["input_ids"]
+    ]
     model_inputs["labels"] = labels["input_ids"]
     return model_inputs
+
 
 # تبدیل داده‌ها به فرمت Dataset
 train_dataset = Dataset.from_pandas(train_df)
@@ -74,8 +79,8 @@ data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model)
 # تنظیمات آموزش
 training_args = TrainingArguments(
     output_dir="./results",
-    evaluation_strategy="epoch",
-    save_strategy="epoch",
+    evaluation_strategy="epoch",  # برای ارزیابی در هر اتمام یک اپوک
+    save_strategy="epoch",  # ذخیره مدل در هر اپوک
     learning_rate=2e-5,
     per_device_train_batch_size=2,
     per_device_eval_batch_size=2,
@@ -85,7 +90,7 @@ training_args = TrainingArguments(
     load_best_model_at_end=True,
     logging_dir='./logs',
     logging_steps=10,
-    fp16=False  # در صورت پشتیبانی کارت گرافیک، می‌توان True قرار داد
+    fp16=False
 )
 
 # راه‌اندازی Trainer
