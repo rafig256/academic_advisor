@@ -1,1 +1,10 @@
 data.xlsx
+venv/
+env/
+
+results/
+trained_mt5/
+logs/
+
+__pycache__/
+*.pyc

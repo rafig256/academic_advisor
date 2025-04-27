@@ -76,22 +76,23 @@ def compute_metrics(eval_pred):
 # Data Collator برای پد کردن دسته‌ای
 data_collator = DataCollatorForSeq2Seq(tokenizer=tokenizer, model=model)
 
-# تنظیمات آموزش
 training_args = TrainingArguments(
     output_dir="./results",
-    evaluation_strategy="epoch",  # برای ارزیابی در هر اتمام یک اپوک
-    save_strategy="epoch",  # ذخیره مدل در هر اپوک
+    save_steps=500,  # ذخیره مدل هر 500 مرحله
+    eval_steps=500,  # ارزیابی هر 500 مرحله
+    # evaluation_strategy="steps",  # ارزیابی هر 500 مرحله
     learning_rate=2e-5,
     per_device_train_batch_size=2,
     per_device_eval_batch_size=2,
     num_train_epochs=5,
     weight_decay=0.01,
     save_total_limit=2,
-    load_best_model_at_end=True,
+    # load_best_model_at_end=True,  # بارگذاری بهترین مدل در پایان
     logging_dir='./logs',
     logging_steps=10,
     fp16=False
 )
+
 
 # راه‌اندازی Trainer
 trainer = Trainer(
