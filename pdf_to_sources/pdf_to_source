@@ -1,0 +1,33 @@
+import fitz  # PyMuPDF
+import json
+
+def extract_paragraphs_from_pdf(pdf_path):
+    doc = fitz.open(pdf_path)
+    all_text = ""
+    for page in doc:
+        all_text += page.get_text()
+    paragraphs = [p.strip() for p in all_text.split('\n\n') if len(p.strip()) > 30]
+    return paragraphs
+
+def create_summarization_dataset(paragraphs, output_path):
+    dataset = []
+    for para in paragraphs:
+        item = {
+            "input": f"خلاصه کن: {para}",
+            "target": ""  # بعداً می‌تونی خلاصه دستی یا خودکار اضافه کنی
+        }
+        dataset.append(item)
+    
+    with open(output_path, 'w', encoding='utf-8') as f:
+        for item in dataset:
+            json.dump(item, f, ensure_ascii=False)
+            f.write('\n')
+
+    print(f"✅ Dataset saved to {output_path} (total {len(dataset)} samples)")
+
+# استفاده:
+pdf_path = "file.pdf"  # ← مسیر فایل PDF
+output_jsonl = "summarization_data.jsonl"
+
+paragraphs = extract_paragraphs_from_pdf(pdf_path)
+create_summarization_dataset(paragraphs, output_jsonl)

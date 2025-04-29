@@ -100,6 +100,8 @@ propcache==0.3.1
     #   yarl
 pyarrow==19.0.1
     # via datasets
+pymupdf==1.25.5
+    # via -r requirements.in
 python-dateutil==2.9.0.post0
     # via pandas
 pytz==2025.2
