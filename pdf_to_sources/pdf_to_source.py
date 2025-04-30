@@ -25,6 +25,77 @@ def extract_paragraphs_from_pdf(pdf_path):
         lines = page.get_text("text").splitlines()
         for line in lines:
             clean_line = normalize_farsi_text(line.strip())
+
+            # حذف شماره صفحه ساده
+            if clean_line.isdigit():
+                continue
+
+            if not clean_line:
+                # خط خالی: بررسی پایان منطقی
+                if current_paragraph:
+                    if current_paragraph.strip()[-1:] in ".!؟":
+                        paragraphs.append(current_paragraph.strip())
+                        current_paragraph = ""
+                    else:
+                        continue
+            else:
+                # اضافه کردن خط به پاراگراف فعلی
+                if current_paragraph:
+                    current_paragraph += " " + clean_line
+                else:
+                    current_paragraph = clean_line
+
+                # ✅ شرط جدید: اگر پاراگراف فعلی بیش از 300 کلمه دارد و با نقطه تمام شده، آن را قطع کنیم
+                word_count = len(current_paragraph.split())
+                if word_count >= 300 and current_paragraph.strip()[-1:] in ".!؟":
+                    paragraphs.append(current_paragraph.strip())
+                    current_paragraph = ""
+
+                    clean_line = normalize_farsi_text(line.strip())
+
+                    # حذف شماره صفحه یا تیتر
+                    if clean_line.isdigit() or len(clean_line) < 6 and all(c.isdigit() or c in 'فصل ' for c in clean_line):
+                        continue
+
+                    if not clean_line:
+                        # خط خالی: پایان پاراگراف
+                        if current_paragraph:
+                            paragraphs.append(current_paragraph.strip())
+                            current_paragraph = ""
+                    else:
+                        # ادامه پاراگراف
+                        if current_paragraph:
+                            current_paragraph += " " + clean_line
+                        else:
+                            current_paragraph = clean_line
+
+        # بررسی پایان صفحه:
+        if current_paragraph and current_paragraph.strip()[-1:] not in ".!؟":
+            # احتمالاً پاراگراف هنوز تموم نشده → ادامه بده
+            continue
+        elif current_paragraph:
+            # پاراگراف کامل شده → اضافه کن
+            paragraphs.append(current_paragraph.strip())
+            current_paragraph = ""
+
+    if current_paragraph:
+        paragraphs.append(current_paragraph.strip())  # آخرین پاراگراف
+
+    # حذف پاراگراف‌های خیلی کوتاه یا بی‌معنا
+    paragraphs = [p for p in paragraphs if len(p) > 50]
+
+    print(f"🔍 استخراج متن از {pdf_path}: {len(paragraphs)} پاراگراف واقعی تشخیص داده شد")
+    return paragraphs
+    doc = fitz.open(pdf_path)
+    paragraphs = []
+    current_paragraph = ""
+
+    for page in doc:
+        lines = page.get_text("text").splitlines()
+        for line in lines:
+            if clean_line.isdigit() or len(clean_line) < 20 and all(c.isdigit() or c in 'فصل ' for c in clean_line):
+                continue  # احتمالاً شماره صفحه یا تیتر بی‌ربط
+            clean_line = normalize_farsi_text(line.strip())
             if not clean_line:
                 # خط خالی: پایان پاراگراف
                 if current_paragraph:
