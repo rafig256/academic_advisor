@@ -1,9 +1,9 @@
-from transformers import MT5Tokenizer
+from transformers import T5Tokenizer
 import json
 
 # استفاده از همان tokenizer مورد نظر شما
 model_name = "google/mt5-small"
-tokenizer = MT5Tokenizer.from_pretrained(model_name)
+tokenizer = T5Tokenizer.from_pretrained(model_name)
 
 input_file = "source/karbord-moshavere-tahsili-shoghli.jsonl"
 output_file = "source/long_inputs.jsonl"

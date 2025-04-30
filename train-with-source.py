@@ -2,7 +2,7 @@ import os
 import json
 from datasets import Dataset, DatasetDict
 from sklearn.model_selection import train_test_split
-from transformers import MT5Tokenizer, MT5ForConditionalGeneration, Trainer, TrainingArguments, DataCollatorForSeq2Seq
+from transformers import T5Tokenizer, MT5ForConditionalGeneration, Trainer, TrainingArguments, DataCollatorForSeq2Seq
 
 # پوشه حاوی فایل‌های jsonl
 source_folder = "source"
@@ -29,9 +29,9 @@ dataset = DatasetDict({
 })
 
 # بارگذاری مدل و tokenizer
-model_name = "google/mt5-small"
-tokenizer = MT5Tokenizer.from_pretrained(model_name)
-model = MT5ForConditionalGeneration.from_pretrained(model_name)
+model_name_or_path = "trained_mt5"  # مسیر پوشه مدل آموزش‌داده‌شده
+tokenizer = T5Tokenizer.from_pretrained(model_name_or_path)
+model = MT5ForConditionalGeneration.from_pretrained(model_name_or_path)
 
 # پیش‌پردازش داده‌ها
 def preprocess(examples):
@@ -46,7 +46,7 @@ tokenized_datasets = dataset.map(preprocess, batched=True)
 
 # تنظیمات آموزش
 training_args = TrainingArguments(
-    output_dir="./mt5_summarizer",
+    output_dir="./mt5_summarizer_level2",
     num_train_epochs=5,
     per_device_train_batch_size=4,
     save_steps=500,
@@ -68,5 +68,5 @@ trainer = Trainer(
 trainer.train()
 
 # ذخیره نهایی
-model.save_pretrained("./mt5_summarizer")
-tokenizer.save_pretrained("./mt5_summarizer")
+model.save_pretrained("./mt5_summarizer_level2")
+tokenizer.save_pretrained("./mt5_summarizer_level2")
