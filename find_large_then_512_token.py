@@ -5,6 +5,7 @@ import json
 model_name = "google/mt5-small"
 tokenizer = T5Tokenizer.from_pretrained(model_name)
 
+# نام فایل برای بررسی
 input_file = "source/karbord-moshavere-tahsili-shoghli.jsonl"
 output_file = "source/long_inputs.jsonl"
 
